@@ -21,6 +21,11 @@ Done so far are:
 * Setting visibility timeouts for messages
 * Purge Queue
 
+Debug actions:
+
+* Dumping messages from a queue to file
+* Reloading messages to a queue from file
+
 Certain bits are left off on purpose, to make it easier to work with, such as:
 
 * No checking on access keys or signatures
@@ -106,6 +111,21 @@ trigger this behavior at at will, with a PUT request.
 $ curl -X PUT http://localhost:4568/
 ```
 
+#### Dumping and loading messages from a file
+
+You can dump messages from a queue to a file at any time with:
+
+```
+$ curl -XPOST http://localhost:4568 -d 'Action=DumpMessages&QueueName=queue-name&FilePath=dump.txt'
+```
+
+And reload messages with:
+
+```
+$ curl -XPOST http://localhost:4568 -d 'Action=LoadMessages&QueueName=queue-name&FilePath=dump.txt'
+```
+
+NB: These are not standard SQS actions.
 
 ### Test Integration
 
