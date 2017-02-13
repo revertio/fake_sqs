@@ -29,6 +29,24 @@ RSpec.describe FakeSQS::Message do
 
   end
 
+  describe "#message_group_id" do
+
+    it "is extracted from the MessageGroupId" do
+      message = create_message("MessageGroupId" => "abc")
+      expect(message.message_group_id).to eq "abc"
+    end
+
+  end
+
+  describe "#message_deduplication_id" do
+
+    it "is extracted from the MessageDeduplicationId" do
+      message = create_message("MessageDeduplicationId" => "abc")
+      expect(message.message_deduplication_id).to eq "abc"
+    end
+
+  end
+
   describe 'visibility_timeout' do
 
     let :message do

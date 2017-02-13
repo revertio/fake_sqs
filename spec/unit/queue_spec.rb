@@ -150,6 +150,38 @@ RSpec.describe FakeSQS::Queue do
 
   end
 
+  context "fifo" do
+    subject(:queue) { FakeSQS::Queue.new(:message_factory => message_factory, "QueueName" => "test-queue.fifo") }
+    describe "#send_message" do
+      it "adds a duplicate message to FIFO queue once" do
+        expect(queue.messages.size).to eq 0
+        dedupe_id = 'dedupe'
+        send_message(
+          'MessageGroupId'          => "random",
+          'MessageDeduplicationId'  => dedupe_id
+        )
+        send_message(
+          'MessageGroupId'          => "random",
+          'MessageDeduplicationId'  => dedupe_id
+        )
+        expect(queue.messages.size).to eq 1
+      end
+      it "adds a non-duplicate message to FIFO queue twice" do
+        expect(queue.messages.size).to eq 0
+        dedupe_id = 'dedupe'
+        send_message(
+          'MessageGroupId'          => "random",
+          'MessageDeduplicationId'  => "#{dedupe_id}-1"
+        )
+        send_message(
+          'MessageGroupId'          => "random",
+          'MessageDeduplicationId'  => "#{dedupe_id}-2"
+        )
+        expect(queue.messages.size).to eq 2
+      end
+    end
+  end
+
   def send_message(options = {})
     queue.send_message(options)
   end

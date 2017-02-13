@@ -46,7 +46,17 @@ module FakeSQS
     def send_message(options = {})
       with_lock do
         message = message_factory.new(options)
-        @messages << message
+
+        if is_fifo?
+          already_present = @messages.any? do |existing|
+            existing.message_deduplication_id.eql? message.message_deduplication_id
+          end
+          unless already_present
+            @messages << message
+          end
+        else
+          @messages << message
+        end
         message
       end
     end
@@ -163,6 +173,10 @@ module FakeSQS
       @lock.synchronize do
         yield
       end
+    end
+
+    def is_fifo?
+      @name.end_with?(".fifo")
     end
 
   end
